@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#235b68" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Financial Freedom" />
+    <title>Financial Freedom</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="auth-screen" id="authScreen">
+      <div class="auth-panel">
+        <div class="brand auth-brand">
+          <span class="brand-mark">FF</span>
+          <div>
+            <strong>Financial Freedom</strong>
+            <small>Akun keuangan pribadi</small>
+          </div>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="showLoginBtn" type="button">Masuk</button>
+          <button class="auth-tab" id="showRegisterBtn" type="button">Daftar</button>
+        </div>
+
+        <form class="auth-form" id="loginForm">
+          <h1>Masuk ke Dashboard</h1>
+          <label>Email<input id="loginEmail" type="email" required autocomplete="email" /></label>
+          <label>Password<input id="loginPassword" type="password" required autocomplete="current-password" /></label>
+          <button class="primary-action" type="submit">Masuk</button>
+        </form>
+
+        <form class="auth-form hidden" id="registerForm">
+          <h1>Buat Akun</h1>
+          <label>Nama<input id="registerName" type="text" required autocomplete="name" /></label>
+          <label>Email<input id="registerEmail" type="email" required autocomplete="email" /></label>
+          <label>Password<input id="registerPassword" type="password" minlength="6" required autocomplete="new-password" /></label>
+          <button class="primary-action" type="submit">Buat Akun</button>
+        </form>
+        <p class="auth-message" id="authMessage"></p>
+      </div>
+    </section>
+
+    <div class="app-shell hidden" id="appShell">
+      <div class="nav-backdrop" id="navBackdrop"></div>
+      <aside class="sidebar" aria-label="Navigasi utama">
+        <div class="brand">
+          <span class="brand-mark">FF</span>
+          <div>
+            <strong>Financial Freedom</strong>
+            <small>Keuangan harian</small>
+          </div>
+        </div>
+        <nav class="nav" id="nav">
+          <button class="nav-item active" data-view="dashboard">Dashboard</button>
+          <button class="nav-item" data-view="transactions">Transaksi</button>
+          <button class="nav-item" data-view="reports">Laporan</button>
+          <button class="nav-item" data-view="budgets">Anggaran</button>
+          <button class="nav-item" data-view="bills">Tagihan</button>
+          <button class="nav-item" data-view="freedom">Financial Freedom</button>
+          <button class="nav-item" data-view="settings">Pengaturan</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="todayLabel"></p>
+            <h1 id="viewTitle">Dashboard</h1>
+          </div>
+          <div class="top-actions">
+            <span class="user-pill" id="currentUserName">User</span>
+            <button class="secondary-action" id="logoutBtn" type="button">Keluar</button>
+            <button class="menu-toggle" id="menuToggleBtn" type="button" aria-controls="nav" aria-expanded="false">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <button class="primary-action quick-add" id="quickAddBtn" type="button">+ Transaksi</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboardView">
+          <div class="summary-grid">
+            <article class="metric">
+              <span>Masuk hari ini</span>
+              <strong id="incomeToday">Rp0</strong>
+            </article>
+            <article class="metric expense">
+              <span>Keluar hari ini</span>
+              <strong id="expenseToday">Rp0</strong>
+            </article>
+            <article class="metric">
+              <span>Pemasukan bulan ini</span>
+              <strong id="incomeMonth">Rp0</strong>
+            </article>
+            <article class="metric expense">
+              <span>Pengeluaran bulan ini</span>
+              <strong id="expenseMonth">Rp0</strong>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Sisa Uang Bulan Ini</h2>
+                <span id="monthBalancePill" class="status-pill">Rp0</span>
+              </div>
+              <div class="balance-hero" id="monthBalance">Rp0</div>
+              <p class="hint" id="savingInsight">Mulai catat transaksi untuk melihat pola keuanganmu.</p>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Progres Financial Freedom</h2>
+                <span id="freedomPercentLabel">0%</span>
+              </div>
+              <div class="progress-track"><span id="freedomProgress"></span></div>
+              <div class="split-row">
+                <span>Target</span>
+                <strong id="freedomTargetMini">Rp0</strong>
+              </div>
+              <div class="split-row">
+                <span>Proyeksi</span>
+                <strong id="freedomProjectedMini">Rp0</strong>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Pengeluaran Terbesar</h2>
+              <button class="ghost-action" data-switch="reports" type="button">Lihat laporan</button>
+            </div>
+            <div id="topCategories" class="category-bars"></div>
+          </section>
+        </section>
+
+        <section class="view" id="transactionsView">
+          <div class="work-grid">
+            <form class="panel form-panel" id="transactionForm">
+              <input type="hidden" id="transactionId" />
+              <h2 id="transactionFormTitle">Tambah Transaksi</h2>
+              <div class="segmented">
+                <label><input type="radio" name="type" value="income" checked /> Pemasukan</label>
+                <label><input type="radio" name="type" value="expense" /> Pengeluaran</label>
+              </div>
+              <label>Nominal<input id="amount" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Tanggal<input id="date" type="date" required /></label>
+              <label>Kategori<select id="category" required></select></label>
+              <label>Metode pembayaran<input id="paymentMethod" type="text" placeholder="Tunai, QRIS, transfer" /></label>
+              <label>Catatan<textarea id="note" rows="3" placeholder="Opsional"></textarea></label>
+              <div class="button-row">
+                <button class="primary-action" type="submit">Simpan</button>
+                <button class="secondary-action" id="resetTransactionBtn" type="button">Reset</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Daftar Transaksi</h2>
+                <input class="search" id="transactionSearch" type="search" placeholder="Cari catatan, kategori, nominal" />
+              </div>
+              <div class="filters">
+                <select id="transactionTypeFilter">
+                  <option value="all">Semua jenis</option>
+                  <option value="income">Pemasukan</option>
+                  <option value="expense">Pengeluaran</option>
+                </select>
+                <select id="transactionCategoryFilter">
+                  <option value="all">Semua kategori</option>
+                </select>
+              </div>
+              <div id="transactionList" class="list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="reportsView">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Laporan Bulanan</h2>
+              <div class="filters compact">
+                <input id="reportMonth" type="month" />
+                <select id="reportCategory">
+                  <option value="all">Semua kategori</option>
+                </select>
+              </div>
+            </div>
+            <div class="summary-grid report-summary">
+              <article class="metric"><span>Pemasukan</span><strong id="reportIncome">Rp0</strong></article>
+              <article class="metric expense"><span>Pengeluaran</span><strong id="reportExpense">Rp0</strong></article>
+              <article class="metric"><span>Sisa uang</span><strong id="reportBalance">Rp0</strong></article>
+              <article class="metric"><span>Perbandingan bulan lalu</span><strong id="reportCompare">0%</strong></article>
+            </div>
+            <div class="report-layout">
+              <div>
+                <h3>Grafik Pengeluaran per Kategori</h3>
+                <div id="reportBars" class="category-bars"></div>
+              </div>
+              <div>
+                <h3>Insight</h3>
+                <div id="insightList" class="insights"></div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="budgetsView">
+          <div class="work-grid">
+            <form class="panel form-panel" id="budgetForm">
+              <input type="hidden" id="budgetId" />
+              <h2>Anggaran Kategori</h2>
+              <label>Kategori<select id="budgetCategory" required></select></label>
+              <label>Batas bulanan<input id="budgetLimit" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Bulan<input id="budgetMonth" type="month" required /></label>
+              <div class="button-row">
+                <button class="primary-action" type="submit">Simpan</button>
+                <button class="secondary-action" id="resetBudgetBtn" type="button">Reset</button>
+              </div>
+            </form>
+            <section class="panel">
+              <div class="panel-head"><h2>Sisa Anggaran</h2></div>
+              <div id="budgetList" class="list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="billsView">
+          <div class="work-grid">
+            <form class="panel form-panel" id="billForm">
+              <input type="hidden" id="billId" />
+              <h2>Pengingat Tagihan</h2>
+              <label>Nama tagihan<input id="billName" type="text" required /></label>
+              <label>Nominal<input id="billAmount" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Jatuh tempo<input id="billDueDate" type="date" required /></label>
+              <label>Frekuensi<select id="billFrequency">
+                <option value="once">Sekali</option>
+                <option value="weekly">Mingguan</option>
+                <option value="monthly">Bulanan</option>
+                <option value="yearly">Tahunan</option>
+              </select></label>
+              <label>Kategori<select id="billCategory" required></select></label>
+              <label>Status<select id="billStatus">
+                <option value="unpaid">Belum dibayar</option>
+                <option value="paid">Sudah dibayar</option>
+              </select></label>
+              <div class="button-row">
+                <button class="primary-action" type="submit">Simpan</button>
+                <button class="secondary-action" id="resetBillBtn" type="button">Reset</button>
+              </div>
+            </form>
+            <section class="panel">
+              <div class="panel-head"><h2>Daftar Tagihan</h2></div>
+              <div id="billList" class="list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="freedomView">
+          <div class="work-grid">
+            <form class="panel form-panel" id="freedomForm">
+              <h2>Kalkulator Financial Freedom</h2>
+              <label>Biaya hidup bulanan<input id="monthlyExpense" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Inflasi tahunan (%)<input id="inflationRate" type="number" min="0" step="0.1" value="4" required /></label>
+              <label>Usia saat ini<input id="currentAge" type="number" min="1" max="100" required /></label>
+              <label>Target usia<input id="targetAge" type="number" min="1" max="100" required /></label>
+              <label>Dana saat ini<input id="currentSavings" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Kontribusi bulanan<input id="monthlyContribution" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Return investasi tahunan (%)<input id="returnRate" type="number" min="0" step="0.1" value="8" required /></label>
+              <label>Safe withdrawal rate (%)<input id="withdrawalRate" type="number" min="0.1" step="0.1" value="4" required /></label>
+              <button class="primary-action" type="submit">Hitung dan Simpan</button>
+            </form>
+            <section class="panel freedom-result">
+              <div class="panel-head">
+                <h2>Hasil Estimasi</h2>
+                <span id="freedomStatus" class="status-pill">Belum dihitung</span>
+              </div>
+              <div class="result-number" id="targetAmount">Rp0</div>
+              <p class="hint">Target dana agar biaya hidup bisa ditarik dengan asumsi withdrawal rate.</p>
+              <div class="result-grid">
+                <div><span>Proyeksi dana</span><strong id="projectedAmount">Rp0</strong></div>
+                <div><span>Kekurangan / kelebihan</span><strong id="fundingGap">Rp0</strong></div>
+                <div><span>Kontribusi disarankan</span><strong id="neededContribution">Rp0</strong></div>
+                <div><span>Progres</span><strong id="freedomResultProgress">0%</strong></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="settingsView">
+          <section class="panel">
+            <h2>Pengaturan</h2>
+            <p class="hint">Data akun tersimpan di backend lokal dan dipisahkan per user.</p>
+            <button class="danger-action" id="clearDataBtn" type="button">Hapus Semua Data</button>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

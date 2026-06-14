@@ -1,0 +1,19 @@
+{
+  "name": "Financial Freedom",
+  "short_name": "Finance",
+  "description": "Aplikasi keuangan harian dan kalkulator financial freedom.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7f9",
+  "theme_color": "#235b68",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
