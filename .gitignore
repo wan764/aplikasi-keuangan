@@ -2,3 +2,6 @@ database.json
 node_modules/
 android/
 www/
+apk-output/
+*.apk
+*.zip
