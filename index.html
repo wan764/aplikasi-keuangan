@@ -27,6 +27,7 @@
           <button class="nav-item active" data-view="dashboard">Dashboard</button>
           <button class="nav-item" data-view="transactions">Transaksi</button>
           <button class="nav-item" data-view="reports">Laporan</button>
+          <button class="nav-item" data-view="assets">Aset</button>
           <button class="nav-item" data-view="budgets">Anggaran</button>
           <button class="nav-item" data-view="bills">Tagihan</button>
           <button class="nav-item" data-view="freedom">Financial Freedom</button>
@@ -69,6 +70,10 @@
               <span>Pengeluaran bulan ini</span>
               <strong id="expenseMonth">Rp0</strong>
             </article>
+            <article class="metric asset">
+              <span>Total aset tersimpan</span>
+              <strong id="totalAssets">Rp0</strong>
+            </article>
           </div>
 
           <div class="dashboard-grid">
@@ -104,6 +109,14 @@
               <button class="ghost-action" data-switch="reports" type="button">Lihat laporan</button>
             </div>
             <div id="topCategories" class="category-bars"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Uang Tersimpan</h2>
+              <button class="ghost-action" data-switch="assets" type="button">Kelola aset</button>
+            </div>
+            <div id="dashboardAssetList" class="asset-list"></div>
           </section>
         </section>
 
@@ -175,6 +188,38 @@
               </div>
             </div>
           </section>
+        </section>
+
+        <section class="view" id="assetsView">
+          <div class="work-grid">
+            <form class="panel form-panel" id="assetForm">
+              <input type="hidden" id="assetId" />
+              <h2 id="assetFormTitle">Tambah Tempat Uang</h2>
+              <label>Nama tempat<input id="assetName" type="text" placeholder="BCA, BNI, Stockbit, Binance" required /></label>
+              <label>Jenis<select id="assetType">
+                <option value="bank">Bank</option>
+                <option value="cash">Tunai</option>
+                <option value="ewallet">E-wallet</option>
+                <option value="investment">Investasi</option>
+                <option value="crypto">Crypto</option>
+                <option value="other">Lainnya</option>
+              </select></label>
+              <label>Saldo<input id="assetAmount" type="text" inputmode="numeric" data-money-input required /></label>
+              <label>Catatan<textarea id="assetNote" rows="3" placeholder="Opsional"></textarea></label>
+              <div class="button-row">
+                <button class="primary-action" type="submit">Simpan</button>
+                <button class="secondary-action" id="resetAssetBtn" type="button">Reset</button>
+              </div>
+            </form>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Daftar Aset</h2>
+                <span class="status-pill" id="assetTotalPill">Rp0</span>
+              </div>
+              <div id="assetList" class="list"></div>
+            </section>
+          </div>
         </section>
 
         <section class="view" id="budgetsView">

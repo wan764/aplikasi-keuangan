@@ -242,6 +242,10 @@ button {
   color: var(--expense);
 }
 
+.metric.asset strong {
+  color: var(--accent);
+}
+
 .dashboard-grid,
 .work-grid {
   display: grid;
@@ -319,10 +323,22 @@ button {
 }
 
 .category-bars,
+.asset-list,
 .insights,
 .list {
   display: grid;
   gap: 10px;
+}
+
+.asset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfcfc;
 }
 
 .bar-item {

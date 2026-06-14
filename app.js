@@ -16,6 +16,7 @@ const categories = [
 
 const initialState = {
   transactions: [],
+  assets: [],
   budgets: [],
   bills: [],
   freedomGoal: null,
@@ -27,6 +28,7 @@ const viewTitles = {
   dashboard: "Dashboard",
   transactions: "Transaksi",
   reports: "Laporan",
+  assets: "Aset",
   budgets: "Anggaran",
   bills: "Tagihan",
   freedom: "Financial Freedom",
@@ -38,6 +40,15 @@ const frequencyLabels = {
   weekly: "Mingguan",
   monthly: "Bulanan",
   yearly: "Tahunan",
+};
+
+const assetTypeLabels = {
+  bank: "Bank",
+  cash: "Tunai",
+  ewallet: "E-wallet",
+  investment: "Investasi",
+  crypto: "Crypto",
+  other: "Lainnya",
 };
 
 const rupiah = new Intl.NumberFormat("id-ID", {
@@ -132,6 +143,10 @@ function expenseByCategory(transactions) {
     }, {});
 }
 
+function totalAssets() {
+  return (state.assets || []).reduce((total, asset) => total + Number(asset.amount || 0), 0);
+}
+
 function renderBars(container, totals, emptyText = "Belum ada pengeluaran.") {
   const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
   if (!entries.length) {
@@ -168,11 +183,38 @@ function renderDashboard() {
   el("expenseToday").textContent = money(expenseToday);
   el("incomeMonth").textContent = money(incomeMonth);
   el("expenseMonth").textContent = money(expenseMonth);
+  el("totalAssets").textContent = money(totalAssets());
   el("monthBalance").textContent = money(balance);
   el("monthBalancePill").textContent = balance >= 0 ? "Surplus" : "Defisit";
   el("savingInsight").textContent = buildSavingInsight(monthTransactions);
   renderBars(el("topCategories"), expenseByCategory(monthTransactions), "Belum ada kategori terbesar bulan ini.");
+  renderDashboardAssets();
   renderFreedomMini();
+}
+
+function renderDashboardAssets() {
+  const assets = [...(state.assets || [])].sort((a, b) => Number(b.amount) - Number(a.amount));
+  const container = el("dashboardAssetList");
+  if (!assets.length) {
+    container.innerHTML = '<p class="hint">Belum ada data tempat uang. Tambahkan BCA, BNI, Stockbit, Binance, atau tempat lainnya.</p>';
+    return;
+  }
+
+  const total = totalAssets();
+  container.innerHTML = assets
+    .map((asset) => {
+      const percent = total ? Math.round((Number(asset.amount) / total) * 100) : 0;
+      return `
+        <article class="asset-row">
+          <div>
+            <strong>${asset.name}</strong>
+            <div class="hint">${assetTypeLabels[asset.type] || "Lainnya"} - ${percent}% dari total</div>
+          </div>
+          <strong>${money(asset.amount)}</strong>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 function renderFreedomMini() {
@@ -261,6 +303,40 @@ function renderReports() {
   el("reportCompare").textContent = previousExpense ? `${compare > 0 ? "+" : ""}${Math.round(compare)}%` : "Belum ada data";
   renderBars(el("reportBars"), expenseByCategory(transactions), "Belum ada pengeluaran pada filter ini.");
   renderInsights(transactions, previousTransactions);
+}
+
+function renderAssets() {
+  const assets = [...(state.assets || [])].sort((a, b) => Number(b.amount) - Number(a.amount));
+  el("assetTotalPill").textContent = money(totalAssets());
+  el("assetList").innerHTML = assets.length
+    ? assets
+        .map((asset) => `
+          <article class="list-item">
+            <div class="item-top">
+              <div>
+                <strong>${asset.name}</strong>
+                <div class="hint">${assetTypeLabels[asset.type] || "Lainnya"}</div>
+              </div>
+              <strong>${money(asset.amount)}</strong>
+            </div>
+            ${asset.note ? `<p>${asset.note}</p>` : ""}
+            <div class="item-actions">
+              <button type="button" data-edit-asset="${asset.id}">Edit</button>
+              <button type="button" data-delete-asset="${asset.id}">Hapus</button>
+            </div>
+          </article>
+        `)
+        .join("")
+    : '<p class="hint">Belum ada aset. Contoh: BCA 1.000.000, BNI 10.000.000, Stockbit 50.000.000.</p>';
+}
+
+function resetAssetForm() {
+  el("assetId").value = "";
+  el("assetFormTitle").textContent = "Tambah Tempat Uang";
+  el("assetName").value = "";
+  el("assetType").value = "bank";
+  el("assetAmount").value = "";
+  el("assetNote").value = "";
 }
 
 function renderInsights(transactions, previousTransactions) {
@@ -417,6 +493,7 @@ function renderAll() {
   renderDashboard();
   renderTransactions();
   renderReports();
+  renderAssets();
   renderBudgets();
   renderBills();
   renderFreedom();
@@ -453,6 +530,25 @@ document.addEventListener("click", (event) => {
 
   if (target.dataset.deleteTransaction) {
     state.transactions = state.transactions.filter((item) => item.id !== target.dataset.deleteTransaction);
+    saveState();
+    renderAll();
+  }
+
+  const editAssetId = target.dataset.editAsset;
+  if (editAssetId) {
+    const asset = (state.assets || []).find((item) => item.id === editAssetId);
+    if (asset) {
+      el("assetId").value = asset.id;
+      el("assetFormTitle").textContent = "Edit Tempat Uang";
+      el("assetName").value = asset.name;
+      el("assetType").value = asset.type;
+      el("assetAmount").value = formatMoneyInput(asset.amount);
+      el("assetNote").value = asset.note || "";
+    }
+  }
+
+  if (target.dataset.deleteAsset) {
+    state.assets = (state.assets || []).filter((item) => item.id !== target.dataset.deleteAsset);
     saveState();
     renderAll();
   }
@@ -555,6 +651,26 @@ el("transactionForm").addEventListener("submit", (event) => {
   renderAll();
 });
 
+el("assetForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const id = el("assetId").value || uid();
+  const now = new Date().toISOString();
+  const asset = {
+    id,
+    name: el("assetName").value.trim(),
+    type: el("assetType").value,
+    amount: parseMoneyInput(el("assetAmount").value),
+    note: el("assetNote").value.trim(),
+    createdAt: (state.assets || []).find((item) => item.id === id)?.createdAt || now,
+    updatedAt: now,
+  };
+  state.assets = (state.assets || []).filter((item) => item.id !== id).concat(asset);
+  saveState();
+  resetAssetForm();
+  renderAll();
+});
+
+
 el("budgetForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const [year, month] = el("budgetMonth").value.split("-");
@@ -627,6 +743,7 @@ el("clearDataBtn").addEventListener("click", () => {
 
 el("budgetMonth").addEventListener("input", renderBudgets);
 el("resetTransactionBtn").addEventListener("click", resetTransactionForm);
+el("resetAssetBtn").addEventListener("click", resetAssetForm);
 el("resetBudgetBtn").addEventListener("click", resetBudgetForm);
 el("resetBillBtn").addEventListener("click", resetBillForm);
 setupMoneyInputs();
