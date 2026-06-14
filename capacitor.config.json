@@ -1,0 +1,6 @@
+{
+  "appId": "com.wan764.aplikasikeuangan",
+  "appName": "Aplikasi Keuangan",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
