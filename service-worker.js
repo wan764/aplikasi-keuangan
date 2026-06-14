@@ -1,4 +1,4 @@
-const CACHE_NAME = "financial-freedom-static-v4";
+const CACHE_NAME = "financial-freedom-static-v5";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -21,8 +21,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
-  if (url.pathname.startsWith("/api/") || event.request.method !== "GET") return;
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request))

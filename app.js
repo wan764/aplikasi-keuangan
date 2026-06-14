@@ -1,3 +1,5 @@
+const STORAGE_KEY = "financialFreedomApp.offline.v1";
+
 const categories = [
   { id: "food", name: "Makanan", type: "expense" },
   { id: "transport", name: "Transportasi", type: "expense" },
@@ -19,9 +21,7 @@ const initialState = {
   freedomGoal: null,
 };
 
-let state = cloneInitialState();
-let currentUser = null;
-const API_BASE = window.location.protocol === "file:" ? "http://localhost:3000" : "";
+let state = loadState();
 
 const viewTitles = {
   dashboard: "Dashboard",
@@ -81,52 +81,16 @@ function cloneInitialState() {
   return JSON.parse(JSON.stringify(initialState));
 }
 
-function saveState() {
-  if (!currentUser) return;
-  apiRequest("/api/data", {
-    method: "PUT",
-    body: JSON.stringify(state),
-  }).catch((error) => showAuthMessage(error.message));
-}
-
-async function apiRequest(url, options = {}) {
-  let response;
+function loadState() {
   try {
-    response = await fetch(`${API_BASE}${url}`, {
-      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-      credentials: "include",
-      ...options,
-    });
+    return { ...cloneInitialState(), ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
   } catch {
-    throw new Error("Backend belum aktif. Jalankan npm start lalu buka http://localhost:3000.");
+    return cloneInitialState();
   }
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error || "Terjadi kesalahan.");
-  return payload;
 }
 
-function setAuthenticated(payload) {
-  currentUser = payload.user;
-  state = { ...cloneInitialState(), ...(payload.data || {}) };
-  el("currentUserName").textContent = currentUser.name;
-  el("authScreen").classList.add("hidden");
-  el("appShell").classList.remove("hidden");
-  appShell().dataset.view = "dashboard";
-  showAuthMessage("");
-  seedFormDefaults();
-  renderAll();
-}
-
-function setLoggedOut() {
-  currentUser = null;
-  state = cloneInitialState();
-  el("appShell").classList.add("hidden");
-  el("authScreen").classList.remove("hidden");
-}
-
-function showAuthMessage(message, isSuccess = false) {
-  el("authMessage").textContent = message;
-  el("authMessage").classList.toggle("success", isSuccess);
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
 function setMobileMenu(open) {
@@ -646,7 +610,7 @@ el("freedomForm").addEventListener("submit", (event) => {
 });
 
 el("clearDataBtn").addEventListener("click", () => {
-  if (confirm("Hapus semua data keuangan untuk akun ini?")) {
+  if (confirm("Hapus semua data keuangan di perangkat ini?")) {
     state = cloneInitialState();
     saveState();
     renderAll();
@@ -667,70 +631,8 @@ el("resetBudgetBtn").addEventListener("click", resetBudgetForm);
 el("resetBillBtn").addEventListener("click", resetBillForm);
 setupMoneyInputs();
 
-el("showLoginBtn").addEventListener("click", () => {
-  el("showLoginBtn").classList.add("active");
-  el("showRegisterBtn").classList.remove("active");
-  el("loginForm").classList.remove("hidden");
-  el("registerForm").classList.add("hidden");
-  showAuthMessage("");
-});
-
-el("showRegisterBtn").addEventListener("click", () => {
-  el("showRegisterBtn").classList.add("active");
-  el("showLoginBtn").classList.remove("active");
-  el("registerForm").classList.remove("hidden");
-  el("loginForm").classList.add("hidden");
-  showAuthMessage("");
-});
-
-el("loginForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  try {
-    const payload = await apiRequest("/api/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: el("loginEmail").value,
-        password: el("loginPassword").value,
-      }),
-    });
-    setAuthenticated(payload);
-  } catch (error) {
-    showAuthMessage(error.message);
-  }
-});
-
-el("registerForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  try {
-    const payload = await apiRequest("/api/register", {
-      method: "POST",
-      body: JSON.stringify({
-        name: el("registerName").value,
-        email: el("registerEmail").value,
-        password: el("registerPassword").value,
-      }),
-    });
-    setAuthenticated(payload);
-  } catch (error) {
-    showAuthMessage(error.message);
-  }
-});
-
-el("logoutBtn").addEventListener("click", async () => {
-  await apiRequest("/api/logout", { method: "POST" }).catch(() => {});
-  setLoggedOut();
-});
-
-async function initApp() {
-  try {
-    const payload = await apiRequest("/api/me");
-    setAuthenticated(payload);
-  } catch {
-    setLoggedOut();
-  }
-}
-
-initApp();
+seedFormDefaults();
+renderAll();
 
 if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
   navigator.serviceWorker.register("/service-worker.js").catch(() => {});

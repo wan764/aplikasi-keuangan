@@ -13,39 +13,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <section class="auth-screen" id="authScreen">
-      <div class="auth-panel">
-        <div class="brand auth-brand">
-          <span class="brand-mark">FF</span>
-          <div>
-            <strong>Financial Freedom</strong>
-            <small>Akun keuangan pribadi</small>
-          </div>
-        </div>
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="showLoginBtn" type="button">Masuk</button>
-          <button class="auth-tab" id="showRegisterBtn" type="button">Daftar</button>
-        </div>
-
-        <form class="auth-form" id="loginForm">
-          <h1>Masuk ke Dashboard</h1>
-          <label>Email<input id="loginEmail" type="email" required autocomplete="email" /></label>
-          <label>Password<input id="loginPassword" type="password" required autocomplete="current-password" /></label>
-          <button class="primary-action" type="submit">Masuk</button>
-        </form>
-
-        <form class="auth-form hidden" id="registerForm">
-          <h1>Buat Akun</h1>
-          <label>Nama<input id="registerName" type="text" required autocomplete="name" /></label>
-          <label>Email<input id="registerEmail" type="email" required autocomplete="email" /></label>
-          <label>Password<input id="registerPassword" type="password" minlength="6" required autocomplete="new-password" /></label>
-          <button class="primary-action" type="submit">Buat Akun</button>
-        </form>
-        <p class="auth-message" id="authMessage"></p>
-      </div>
-    </section>
-
-    <div class="app-shell hidden" id="appShell">
+    <div class="app-shell" id="appShell" data-view="dashboard">
       <div class="nav-backdrop" id="navBackdrop"></div>
       <aside class="sidebar" aria-label="Navigasi utama">
         <div class="brand">
@@ -73,8 +41,7 @@
             <h1 id="viewTitle">Dashboard</h1>
           </div>
           <div class="top-actions">
-            <span class="user-pill" id="currentUserName">User</span>
-            <button class="secondary-action" id="logoutBtn" type="button">Keluar</button>
+            <span class="user-pill">Offline</span>
             <button class="menu-toggle" id="menuToggleBtn" type="button" aria-controls="nav" aria-expanded="false">
               <span></span>
               <span></span>
@@ -295,7 +262,7 @@
         <section class="view" id="settingsView">
           <section class="panel">
             <h2>Pengaturan</h2>
-            <p class="hint">Data akun tersimpan di backend lokal dan dipisahkan per user.</p>
+            <p class="hint">Data tersimpan di perangkat ini. Tidak perlu login, server, atau database.</p>
             <button class="danger-action" id="clearDataBtn" type="button">Hapus Semua Data</button>
           </section>
         </section>

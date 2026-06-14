@@ -49,68 +49,6 @@ button {
   display: none;
 }
 
-.auth-screen {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
-  padding: 24px;
-  background:
-    linear-gradient(135deg, rgba(35, 91, 104, 0.12), rgba(217, 155, 52, 0.14)),
-    var(--bg);
-}
-
-.auth-panel {
-  width: min(440px, 100%);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  padding: 24px;
-}
-
-.auth-brand {
-  margin-bottom: 20px;
-}
-
-.auth-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-.auth-tab {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  min-height: 40px;
-  background: #f8faf9;
-  color: var(--muted);
-  font-weight: 800;
-}
-
-.auth-tab.active {
-  background: var(--accent);
-  color: #ffffff;
-  border-color: var(--accent);
-}
-
-.auth-form h1 {
-  margin: 0 0 6px;
-  font-size: 26px;
-  letter-spacing: 0;
-}
-
-.auth-message {
-  min-height: 22px;
-  margin: 14px 0 0;
-  color: var(--danger);
-  font-weight: 700;
-}
-
-.auth-message.success {
-  color: var(--income);
-}
-
 .app-shell {
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -668,28 +606,6 @@ textarea {
 
   .app-shell[data-view="transactions"] .quick-add {
     display: none;
-  }
-
-  #logoutBtn {
-    min-width: 82px;
-  }
-
-  .auth-screen {
-    align-items: start;
-    padding: 18px;
-  }
-
-  .auth-panel {
-    margin-top: 28px;
-    padding: 20px;
-  }
-
-  .auth-tabs {
-    gap: 6px;
-  }
-
-  .auth-form h1 {
-    font-size: 24px;
   }
 
   .panel-head {
